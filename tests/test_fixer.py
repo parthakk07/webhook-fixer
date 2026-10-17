@@ -130,3 +130,8 @@ def test_createos_wiring(monkeypatch: pytest.MonkeyPatch) -> None:
     sb.close()
     kinds = [c[0] for c in fake.calls]
     assert kinds.count("process") == 2 and ("delete", "proc-1") in fake.calls and kinds[-1] == "destroy"
+
+
+def test_never_more_than_five_rounds():
+    result = run(MockLLM([BROKEN.replace("BROKEN", "still broken")] * 20), max_iters=50)
+    assert len(result.iterations) <= 5

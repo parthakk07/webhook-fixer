@@ -43,7 +43,7 @@ def main(argv: list[str] | None = None) -> int:
     r = sub.add_parser("run")
     r.add_argument("handler", type=Path)
     r.add_argument("--events", default=",".join(DEFAULT_EVENTS))
-    r.add_argument("--max-iters", type=int, default=5)
+    r.add_argument("--max-iters", type=int, default=5, choices=range(1, 6), metavar="1-5", help="max repair rounds (hard cap 5)")
     r.add_argument("--delivery", choices=["local", "stripe"], default="local",
                    help="local = sign fixtures + POST (default); stripe = real endpoint + `stripe trigger`")
     r.add_argument("--sandbox", choices=["createos", "local"], default="createos")

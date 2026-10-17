@@ -30,7 +30,7 @@ with st.sidebar:
     delivery_mode = st.radio("Delivery", ["Signed replay (robust)", "Real Stripe endpoint + stripe trigger"])
     dry_run = st.toggle("Offline dry run (local sandbox + mock LLM)", value=False)
     max_iters = st.slider("Max iterations", 1, 5, 5)
-    go = st.button("🚀 Run fixer", type="primary", use_container_width=True)
+    go = st.button(" Run fixer", type="primary", use_container_width=True)
 
 
 def grid(it: Iteration) -> str:
@@ -82,7 +82,7 @@ if go:
         st.exception(exc)
 
     if result:
-        status.update(label="All events green ✅" if result.success else "Stopped before all green",
+        status.update(label="All events green " if result.success else "Stopped before all green",
                       state="complete" if result.success else "error")
         if result.success:
             st.balloons()

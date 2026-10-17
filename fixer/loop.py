@@ -75,9 +75,13 @@ def build_feedback(it: Iteration) -> str:
             f"Sandbox server log (tail):\n{it.logs[-3000:]}")
 
 
+MAX_ITERS = 5  # hard cap: the agent never tries more than 5 rounds
+
+
 def fix_session(handler_code: str, events: list[str], sandbox: Sandbox, delivery: Delivery,
                 llm: LLM, max_iters: int = 5) -> Iterator[Progress]:
     """Generator driving one full repair session. Always tears down the sandbox and Stripe endpoint."""
+    max_iters = max(1, min(max_iters, MAX_ITERS))
     result = RunResult(original=handler_code, final=handler_code)
     try:
         result.url = sandbox.start()
