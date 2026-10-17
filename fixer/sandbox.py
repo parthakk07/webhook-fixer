@@ -26,7 +26,8 @@ _INTERNAL_POST = (
     "r=json.load(sys.stdin)\n"
     "q=urllib.request.Request('http://127.0.0.1:%d/webhook',data=r['body'].encode(),headers=r['headers'],method='POST')\n"
     "try:\n print(urllib.request.urlopen(q,timeout=15).status)\n"
-    "except urllib.error.HTTPError as e:\n print(e.code)\n" % PORT
+    "except urllib.error.HTTPError as e:\n print(e.code)\n"
+    "except Exception as e:\n print('conn-error', repr(e)[:300]); print(599)\n" % PORT
 )
 
 

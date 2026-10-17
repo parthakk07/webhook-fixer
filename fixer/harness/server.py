@@ -67,7 +67,17 @@ class Harness(BaseHTTPRequestHandler):
                 error = traceback.format_exc()
                 print(f"Unhandled exception for {event_type} {event_id}\n{error}", flush=True)
                 status, payload = 500, {"error": "internal error"}
-        self._reply(status, payload)
+        try:
+            if not isinstance(payload, (bytes, str)):
+                payload = json.dumps(payload)  # non-JSON results (sets, bytes...) are handler bugs
+        except Exception:  # noqa: BLE001
+            error = traceback.format_exc()
+            print(f"Response not JSON-serialisable for {event_type} {event_id}\n{error}", flush=True)
+            status, payload = 500, {"error": "response not JSON serialisable"}
+        try:
+            self._reply(status, payload)
+        except Exception:  # noqa: BLE001 - never drop the connection silently
+            print("reply failed\n" + traceback.format_exc(), flush=True)
         record = {"ts": time.time(), "event_id": event_id, "event_type": event_type,
                   "status": status, "error": error[-2000:]}
         with open(REQUEST_LOG, "a", encoding="utf-8") as fh:

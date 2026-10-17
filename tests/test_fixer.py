@@ -135,3 +135,14 @@ def test_createos_wiring(monkeypatch: pytest.MonkeyPatch) -> None:
 def test_never_more_than_five_rounds():
     result = run(MockLLM([BROKEN.replace("BROKEN", "still broken")] * 20), max_iters=50)
     assert len(result.iterations) <= 5
+
+
+def test_non_json_response_is_500_not_a_crash():
+    bad = BROKEN.replace("def handle(", "def _orig_handle(", 1) + (
+        "\n\ndef handle(body, headers):\n    s, p = _orig_handle(body, headers)\n    return s, {'x': {1, 2}}\n")
+    sb = sandbox_mod.LocalSandbox(); sb.start()
+    try:
+        sb.deploy(bad, "whsec_test")
+        assert sb.post_internal(b'{"id":"e","type":"x"}', {"Content-Type": "application/json"}) in (400, 500)
+    finally:
+        sb.close()
