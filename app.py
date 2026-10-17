@@ -1,3 +1,4 @@
+import os
 """Streamlit dashboard: watch the agent turn a red webhook grid green. Run: streamlit run app.py"""
 
 from __future__ import annotations
@@ -28,7 +29,10 @@ with st.sidebar:
     code = st.text_area("handler.py", EXAMPLES[choice].read_text() if choice else "", height=320)
     events = st.multiselect("Stripe events", DEFAULT_EVENTS, default=DEFAULT_EVENTS)
     delivery_mode = st.radio("Delivery", ["Signed replay (robust)", "Real Stripe endpoint + stripe trigger"])
-    dry_run = st.toggle("Offline dry run (local sandbox + mock LLM)", value=False)
+    public_demo = os.environ.get("FIXER_PUBLIC_DEMO") == "1"  # hosted copy: no secrets, offline only
+    dry_run = st.toggle("Offline dry run (local sandbox + mock LLM)", value=public_demo, disabled=public_demo)
+    if public_demo:
+        st.caption("Hosted demo runs offline. Clone the repo and add keys to run on a real CreateOS sandbox.")
     max_iters = st.slider("Max iterations", 1, 5, 5)
     go = st.button(" Run fixer", type="primary", use_container_width=True)
 

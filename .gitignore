@@ -4,6 +4,8 @@ __pycache__/
 .pytest_cache/
 out/
 
+txt
+
 .projects/cache
 .projects/vault
 .projects/state.test.json
@@ -11,4 +13,3 @@ out/
 .env
 .env.*
 !.env.example
-txt
