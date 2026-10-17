@@ -1,7 +1,7 @@
+from __future__ import annotations
+
 import os
 """Streamlit dashboard: watch the agent turn a red webhook grid green. Run: streamlit run app.py"""
-
-from __future__ import annotations
 
 import html
 from pathlib import Path
