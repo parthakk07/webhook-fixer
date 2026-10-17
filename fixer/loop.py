@@ -7,6 +7,7 @@ import difflib
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 
+from .input_check import check_handler
 from .delivery import Delivery, EventResult
 from .llm import LLM
 from .sandbox import Sandbox
@@ -61,7 +62,10 @@ def validate_patch(code: str) -> str:
     if "compare_digest" not in code or "hmac" not in code:
         return "signature verification removed (must use hmac + compare_digest on the raw body)"
     banned = [m for m in ("flask", "stripe", "requests") if f"import {m}" in code or f"from {m}" in code]
-    return f"non-stdlib import not available in sandbox: {banned}" if banned else ""
+    if banned:
+        return f"non-stdlib import not available in sandbox: {banned}"
+    problems = check_handler(code)
+    return "; ".join(problems)
 
 
 def build_feedback(it: Iteration) -> str:

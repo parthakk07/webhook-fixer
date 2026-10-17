@@ -8,6 +8,8 @@ import html
 from pathlib import Path
 
 import streamlit as st
+
+from fixer.input_check import check_handler
 from dotenv import load_dotenv
 
 from fixer.delivery import LocalSignedDelivery, StripeDelivery
@@ -51,6 +53,11 @@ def grid(it: Iteration) -> str:
 
 
 if go:
+    problems = check_handler(code)
+    if problems:
+        st.error("**This doesn't look like a Stripe webhook handler, so I won't run it:**\n\n"
+                 + "\n".join(f"- {p}" for p in problems))
+        st.stop()
     if not events:
         st.error("Pick at least one event.")
         st.stop()

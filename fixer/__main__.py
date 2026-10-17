@@ -54,6 +54,12 @@ def main(argv: list[str] | None = None) -> int:
     args = p.parse_args(argv)
 
     events = [e.strip() for e in args.events.split(",") if e.strip()]
+    from .input_check import check_handler
+    problems = check_handler(args.handler.read_text())
+    if problems:
+        print("refused: this doesn't look like a Stripe webhook handler:\n" +
+              "\n".join(f"  - {x}" for x in problems), file=sys.stderr)
+        return 3
     try:
         sandbox, delivery, llm = build(args, events)
     except Exception as exc:  # noqa: BLE001 - missing keys, missing stripe CLI, ...
