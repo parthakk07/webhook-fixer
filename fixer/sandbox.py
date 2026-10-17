@@ -111,8 +111,9 @@ class CreateOSSandbox:
     def __init__(self, shape: str | None = None, rootfs: str | None = None) -> None:
         from createos import Client  # imported lazily so dry runs need no key
 
-        if not os.environ.get("CREATEOS_API_KEY") and os.environ.get("CREATEOS_SANDBOX_API_KEY"):
-            os.environ["CREATEOS_API_KEY"] = os.environ["CREATEOS_SANDBOX_API_KEY"]
+        for alt in ("CREATEOS_SANDBOX_API_KEY", "CREATEOS_PROJECT_API_KEY", "CREATEOS_PLAN_API_KEY"):
+            if not os.environ.get("CREATEOS_API_KEY") and os.environ.get(alt):
+                os.environ["CREATEOS_API_KEY"] = os.environ[alt]  # key written by `stripe projects add createos/...`
         self.client = Client()
         self.shape = shape or os.environ.get("SANDBOX_SHAPE", "s-1vcpu-1gb")
         self.rootfs = rootfs or os.environ.get("SANDBOX_ROOTFS", "devbox:1")
