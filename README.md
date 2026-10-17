@@ -1,5 +1,8 @@
 # 🪝 Stripe Webhook Fixer
 
+**Live demo (hosted on CreateOS, offline mode):** https://dep-ea9f8477-dda0-40f0-835c-ccd06b2f5a4c.tyzo.nodeops.app  
+**Stripe Projects share:** https://projects.dev/s#v1:createos~project
+
 **An agent that runs your broken Stripe webhook handler in a CreateOS sandbox, fires real signed Stripe
 events at its public HTTPS URL, reads the tracebacks, and rewrites the code until every event returns 200,
 without ever dropping signature verification.**
